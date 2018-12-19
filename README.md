@@ -242,7 +242,7 @@ Otherwise, you may use the `kubectl` flag `--kubeconfig=./admin.conf` instead of
 If you have an existing Kubernetes configuration file, you can merge the two with:
 
 ```sh
-mv ~/.kube/config{,.bak} && KUBECONFIG=./admin.conf:~/.kube/config.bak kubectl config view --flatten | tee ~/.kube/config
+mkdir -p ~/.kube && mv ~/.kube/config{,.bak} && KUBECONFIG=./admin.conf:~/.kube/config.bak kubectl config view --flatten | tee ~/.kube/config
 ```
 
 Test you can access the kubernetes cluster:
@@ -339,6 +339,7 @@ kubectl cp /path/to/DGXServer-3.1.2.170902_f8777e.iso $(kubectl get pod -l app=i
 ```
 
 > Note: If the `iso-loader` POD fails to mount the CephFS volume, you may need to restart the kubelet service on the master node(s): `ansible mgmt -b -a "systemctl restart kubelet"`
+> You may see an error that looks like this in your syslog file: `failed to get Plugin from volumeSpec for volume "cephfs" err=no volume plugin matched`
 
 __Configure__
 
@@ -404,6 +405,10 @@ If you make changes to `machines.json`, you can update the file without having t
 kubectl create configmap pxe-machines --from-file=config/machines.json -o yaml --dry-run | kubectl replace -f -
 ```
 
+At this point, if you have not already provisioned your DGX servers or added it to your kubernetes cluster you should [skip ahead](#4-DGX-compute-nodes) before continuing.
+
+Optionally, after provisioning your DGX servers you can delete the iso-loader deployment by running `kubectl delete deployments iso-loader`.
+
 #### __APT Repo:__
 
 Launch service. Runs on port `30000`: http://mgmt:30000
@@ -421,8 +426,7 @@ helm repo add stable https://kubernetes-charts.storage.googleapis.com
 helm install --values config/registry.yml stable/docker-registry --version 1.4.3
 ```
 
-Once you have [provisioned DGX servers](#4.-DGX-compute-nodes),
-configure them to allow access to the local (insecure) container registry:
+Now we will configure the DGX servers to allow access to the local (insecure) container registry:
 
 ```sh
 ansible-playbook -k ansible/playbooks/docker.yml
@@ -525,6 +529,10 @@ Launch Filebeat, which will create an Elasticsearch index automatically:
 ```sh
 helm install --name log --namespace logging --values config/filebeat.yml stable/filebeat
 ```
+
+Service addresses:
+
+* Kibana: http://mgmt:30400
 
 The logging stack can be deleted with:
 
@@ -631,37 +639,12 @@ ansible-playbook -k -l all ansible/playbooks/hosts.yml
 ```
 -->
 
-__Updating Firmware:__
-
-Firmware on the DGX can be updated through the firmware update container(s) and Ansible.
-
-1. Download the firmware update container package from the NVIDIA Enterprise Support Portal.
-Updates are published as announcements on the support portal (example: https://goo.gl/3zimCk).
-Make sure you download the correct package depending on the GPU in the DGX-1:
-   - For V100 (Volta), download the '0102' package - for example: https://dgxdownloads.nvidia.com/custhelp/dgx1/NVIDIA_Containers/nvidia-dgx-fw-0102-20180424.tar.gz
-   - For P100 (Pascal), download the '0101' package - for example: https://dgxdownloads.nvidia.com/custhelp/dgx1/NVIDIA_Containers/nvidia-dgx-fw-0101-20180424.tar.gz
-2. Once you've download the `.tar.gz` file, copy or move it inside `containers/dgx-firmware`
-3. Edit the value of `firmware_update_container` in the file `ansible/roles/nvidia-dgx-firmware/vars/main.yml` to match
-the name of the downloaded firmware container.
-4. Run the Ansible playbook to update DGX firmware:
-
-```sh
-ansible-playbook -k -l dgx-servers ansible/playbooks/firmware.yml
-```
-
 __Adding DGX to Kubernetes:__
 
 Create the NVIDIA GPU k8s device plugin daemon set (just need to do this once):
 
 ```sh
 kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.11/nvidia-device-plugin.yml
-```
-
-If the DGX is a member of the Slurm cluster, be sure to drain node in Slurm so that it does
-not accept Slurm jobs. From the login node, run:
-
-```sh
-sudo scontrol update node=dgx01 state=drain reason=k8s
 ```
 
 Modify the `config/inventory` file to add the DGX to the `kube-node` and `k8s-gpu` categories by uncommenting
@@ -692,6 +675,8 @@ ansible dgx-servers -k -b -a "apt-mark hold docker-ce"
 
 Install the nvidia-container-runtime on the DGX:
 
+> Note the the nvidia-container-runtime is already installed on DGX with OS version 4.04 or later and this step can be ignored.
+
 ```sh
 ansible-playbook -l k8s-gpu -k -v -b --flush-cache --extra-vars "@config/kube.yml" playbooks/k8s-gpu.yml
 ```
@@ -703,6 +688,8 @@ kubectl apply -f tests/gpu-test-job.yml
 kubectl exec -ti gpu-pod -- nvidia-smi -L
 kubectl delete pod gpu-pod
 ```
+
+If you came to this step after deploying your DGXie service you can continue by returning to [services bootstrap section](#apt-repo).
 
 ### 5. Login server:
 
@@ -787,9 +774,35 @@ DGX nodes may appear 'down' in Slurm after install due to rebooting. Set nodes t
 sudo scontrol update node=dgx01 state=idle
 ```
 
+If you are running both Slurm and kubernetes on the same DGX, you may want to reserve the system for kubernetes use only. You can do this with the following command:
+
+```sh
+sudo scontrol update node=dgx01 state=drain reason=k8s
+```
+
+It is also possible to remove the DGX from kubernetes and reserve the resources only for Slurm or to run a mixed hybrid mode.
+
 ## Cluster Usage
 
 ### Maintenance
+
+__Updating Firmware:__
+
+Firmware on the DGX can be updated through the firmware update container(s) and Ansible.
+
+1. Download the firmware update container package from the NVIDIA Enterprise Support Portal.
+Updates are published as announcements on the support portal (example: https://goo.gl/3zimCk).
+Make sure you download the correct package depending on the GPU in the DGX-1:
+   - For V100 (Volta), download the '0102' package - for example: https://dgxdownloads.nvidia.com/custhelp/dgx1/NVIDIA_Containers/nvidia-dgx-fw-0102-20180424.tar.gz
+   - For P100 (Pascal), download the '0101' package - for example: https://dgxdownloads.nvidia.com/custhelp/dgx1/NVIDIA_Containers/nvidia-dgx-fw-0101-20180424.tar.gz
+2. Once you've download the `.tar.gz` file, copy or move it inside `containers/dgx-firmware`
+3. Edit the value of `firmware_update_container` in the file `ansible/roles/nvidia-dgx-firmware/vars/main.yml` to match
+the name of the downloaded firmware container.
+4. Run the Ansible playbook to update DGX firmware:
+
+```sh
+ansible-playbook -k -l dgx-servers ansible/playbooks/firmware.yml
+```
 
 #### Login server
 
