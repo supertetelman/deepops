@@ -536,7 +536,7 @@ helm install --name log --namespace logging --values config/filebeat.yml stable/
 
 Service addresses:
 
-* Kibana: http://mgmt:30400
+* Kibana: http://mgmt:30700
 
 The logging stack can be deleted with:
 
