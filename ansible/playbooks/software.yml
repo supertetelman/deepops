@@ -49,6 +49,10 @@
     tags:
       - raid
       - storage
+  - name: Install python setuptools
+      apt:
+        name: "python-setuptools"
+        state: present
 
 - hosts: tesla-servers
   become: true
