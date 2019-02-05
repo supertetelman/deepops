@@ -17,7 +17,7 @@ Deploy a scalable DGX cluster on-prem or in the cloud
   * [2. Management Server Setup](#2-management-server-setup)
   * [3. Services bootstrap](#3-services)
   * [4. DGX Setup](#4-DGX-compute-nodes)
-  * [5. Monitoring and Logging](#6-monitoring-and-logging)
+  * [5. Monitoring and Logging](#5-monitoring-and-logging)
   * [6. Login Server](#6-login-server)
   * [7. Additional Components](#7-additional-components)
 * [Cluster Usage](#cluster-usage)
@@ -589,7 +589,7 @@ __Optionally__, after provisioning your DGX servers you can delete the iso-loade
 kubectl delete deployments iso-loader
 ```
 
-### 5. Monitoring and Logging
+### 5. Monitoring and Logging:
 
 #### __Monitoring:__
 
