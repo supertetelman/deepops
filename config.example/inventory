@@ -29,11 +29,11 @@
 # Define variables here
 ######
 [all]
-mgmt01
+mgmt01 # TODO: Uncomment these depending on you many mgmt noded you have
 #mgmt02     ansible_host=10.0.0.2
 #mgmt03     ansible_host=10.0.0.3
-#login01
-#dgx01
+#login01 # TODO: Uncomment this if you have a login node
+#dgx01 # TODO: Uncomment these depending on how many DGX you have
 #dgx02
 #dgx03
 
@@ -41,7 +41,7 @@ mgmt01
 # Management Nodes
 ######
 [mgmt]
-mgmt01
+mgmt01 # TODO: Uncomment these depending on you many mgmt noded you have
 #mgmt02
 #mgmt03
 
@@ -55,7 +55,7 @@ mgmt01
 # DGX Nodes
 ######
 [dgx-servers]
-#dgx01
+#dgx01 # TODO: Uncomment these depending on how many DGX you have
 #dgx02
 #dgx03
 
@@ -69,10 +69,10 @@ mgmt01
 # Kubespray may fail otherwise
 [kube-node:children]
 mgmt
-#dgx-servers
+#dgx-servers # TODO:2 Uncomment this after provisioning your DGX
 
 [k8s-gpu:children]
-#dgx-servers
+#dgx-servers # TODO:2 Uncomment this after provisioning your DGX
 
 ###############################################################################
 ## You shouldn't need to make changes below here

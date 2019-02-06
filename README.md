@@ -543,6 +543,10 @@ kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.
 Modify the `config/inventory` file to add the DGX to the `kube-node` and `k8s-gpu` categories by uncommenting
 the `dgx-servers` entry in these sections
 
+```sh
+grep TODO:2 config/inventory
+```
+
 Re-run Kubespray to install Kubernetes on the DGX:
 
 ```sh
