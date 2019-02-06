@@ -1,5 +1,6 @@
 {
     "dgx-example": {
+        "_comments": "TODO: Update the mac field and optionally the message field",
         "mac": "01:02:03:04:05:06",
         "kernel": "/iso/install/netboot/ubuntu-installer/amd64/linux",
         "initrd": ["/iso/install/netboot/ubuntu-installer/amd64/initrd.gz"],
@@ -7,6 +8,7 @@
         "message": "DGX Server 3.1.2"
     },
     "64-bit-ubuntu-example": {
+        "_comments": "TODO: If you have a login server update the mac field and optionally the message field",
         "mac": "01:02:03:04:05:06",
         "kernel": "http://archive.ubuntu.com/ubuntu/dists/xenial-updates/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64/linux",
         "initrd": ["http://archive.ubuntu.com/ubuntu/dists/xenial-updates/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64/initrd.gz"],
