@@ -581,8 +581,8 @@ ansible-playbook -l k8s-gpu -k -v -b --flush-cache --extra-vars "@config/kube.ym
 Test that GPU support is working:
 
 ```sh
-kubectl apply -f tests/gpu-test-job.yml
-kubectl exec -ti gpu-pod -- nvidia-smi -L
+kubectl apply -f tests/gpu-test-job.yml # Note: this will take several minutes to pull down the docker image
+kubectl exec -ti gpu-pod -- nvidia-smi -L # Note: this may fail if the docker image is still downloading
 kubectl delete pod gpu-pod
 ```
 
