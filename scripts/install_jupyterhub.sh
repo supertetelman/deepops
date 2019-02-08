@@ -19,4 +19,4 @@ helm repo update
 helm upgrade --install $RELEASE jupyterhub/jupyterhub \
   --namespace $NAMESPACE  \
   --version=0.8.0-beta.1 \
-  --values config.yaml
+  --values ${config_file}
