@@ -49,7 +49,7 @@ mgmt01 # TODO: Uncomment these depending on you many mgmt noded you have
 # Login Nodes
 ######
 [login]
-#login01
+#login01 # TODO: Uncomment this if you have a login node
 
 ######
 # DGX Nodes
