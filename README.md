@@ -704,11 +704,8 @@ __Provisioning:__
 Modify `config/dhcpd.hosts.conf` to add a static IP lease for each login node
 if required. IP addresses should match those used in the `config/inventory` file.
 
-Update the `dhcpd.hosts.conf` config map if modified and restart the DGXie POD:
-
 ```sh
-kubectl create configmap dhcpd --from-file=config/dhcpd.hosts.conf -o yaml --dry-run | kubectl replace -f -
-kubectl delete pod -l app=dgxie
+grep TODO config/dhcpd.hosts.conf
 ```
 
 Modify `config/machines.json` to add a PXE entry for each login node.
@@ -716,11 +713,11 @@ Copy the `64-bit-ubuntu-example` section and modify
 the MAC address for each login node you would like to boot. You can modify boot parameters or install
 alternate operating systems if required.
 
-Update the PXE server config map:
-
 ```sh
-kubectl create configmap pxe-machines --from-file=config/machines.json -o yaml --dry-run | kubectl replace -f -
+grep TODO config/machines.json
 ```
+
+__Important:__ Follow the [steps listed here ](docs/dgxie.md)  to update the DGXie with the new dhcp and PXE configurations. 
 
 Set login nodes to boot from the network for the next boot only and power on the systems.
 The login nodes should receive a response from the DGXie service and begin the OS install process.
