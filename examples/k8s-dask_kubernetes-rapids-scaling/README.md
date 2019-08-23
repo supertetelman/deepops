@@ -18,7 +18,7 @@ In order to run through this guide you will need at least 1 node with at least 2
 
 1. Deploy a Kubernetes cluster.
 
-Follow the steps listed in the [Kubernetes Guide](../../docs/kubernetes-cluster.md). Skip the Optional Components, we will be running through the required components later.
+Follow the steps listed in the [Kubernetes Guide](../../docs/kubernetes-cluster.md). Skip the Optional Components, we will be running through the required components later. For `inventory` file examples see the [config](config) directory for multi-node or single-node examples.
 
 Verify the cluster is running by running
 ```sh

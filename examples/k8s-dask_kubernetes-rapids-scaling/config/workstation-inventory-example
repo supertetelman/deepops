@@ -1,0 +1,23 @@
+[all]
+workstation     ansible_host=10.0.0.1
+
+[kube-master]
+workstation
+
+[etcd]
+workstation
+
+[kube-node]
+workstation
+
+[k8s-cluster:children]
+kube-master 	 
+kube-node 	 
+
+# For testing/workflow training purpose the "NFS" can be hosted and mounted on the same system. In practice you want this to be external.
+[nfs-server]
+workstation
+#login01
+
+[nfs-clients]
+workstation

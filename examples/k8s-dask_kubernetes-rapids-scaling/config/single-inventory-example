@@ -1,0 +1,25 @@
+# If you add mgmt nodes (must be an odd number), add a mgmt0x to each section that contains mgmt01, excluding nfs-server
+# If you add compute nodes, add gpu0x to each section that contains gpu01
+[all]
+mgmt01     ansible_host=10.0.0.1
+gpu01      ansible_host=10.0.2.1
+
+[kube-master]
+mgmt01
+
+[etcd]
+mgmt01
+
+[kube-node]
+gpu01
+
+[k8s-cluster:children]
+kube-master 	 
+kube-node 	 
+
+# For testing/workflow training purpose the "NFS" can be hosted and mounted on the same system or a mgmt box. In practice you want this to be external.
+[nfs-server]
+mgmt01
+
+[nfs-clients]
+gpu01
