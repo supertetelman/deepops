@@ -12,6 +12,11 @@ pipeline {
       }
     }
     stage('Cluster Up - Ubuntu') {
+      input {
+        parameters {
+          string(name: 'DEEPOPS_VAGRANT_OS', defaultValue: 'centos', description: 'DEEPOPS_VARGRANT_OS'),
+        }
+      }
       steps {
         // TODO: ideally lock should work with declared stages
         lock(resource: null, label: 'gpu', quantity: 1, variable: 'GPUDATA') {
