@@ -14,7 +14,7 @@ pipeline {
     stage('Cluster Up - Ubuntu') {
       input {
         parameters {
-          string(name: 'DEEPOPS_VAGRANT_OS', defaultValue: 'centos', description: 'DEEPOPS_VARGRANT_OS'),
+          string(name: 'DEEPOPS_VAGRANT_OS', defaultValue: 'centos', description: 'DEEPOPS_VARGRANT_OS')
         }
       }
       steps {
