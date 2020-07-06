@@ -1,0 +1,59 @@
+pipeline {
+  agent any
+  parameters {
+    string(name: 'DEEPOPS_FULL_INSTALL', defaultValue: '', description: '')
+    string(name: 'DEEPOPS_VAGRANT_OS', defaultValue: '', description: '')
+  }
+  environment {
+    DEEPOPS_FULL_INSTALL = '${params.DEEPOPS_FULL_INSTALL}'
+    DEEPOPS_VAGRANT_OS = '${params.DEEPOPS_VAGRANT_OS}'
+  }
+  stages {
+    stage('Cluster Up') {
+      steps {
+        // TODO: ideally lock should work with declared stages
+        lock(resource: null, label: 'gpu', quantity: 1, variable: 'GPUDATA') {
+          echo "Munge files for testing"
+          sh '''
+            bash -x ./.jenkins-scripts/munge-files.sh
+          '''
+
+          echo "Vagrant Up"
+          sh '''
+            bash -x ./.jenkins-scripts/vagrant-startup.sh
+          '''
+
+          echo "Set up Slurm"
+          sh '''
+            bash -x ./.jenkins-scripts/test-setup-slurm.sh
+          '''
+
+          echo "Test Slurm"
+          sh '''
+            timeout 60 bash -x ./.jenkins-scripts/test-slurm-job.sh
+          '''
+
+          echo "Reset repo and unmunge files"
+          sh '''
+            git reset --hard
+            rm -rf config
+          '''
+
+          echo "Tear down Vagrant before next cluster-up"
+          sh '''
+            pwd
+            cd virtual && ./vagrant_shutdown.sh
+          '''
+        }
+      }
+    }
+  }
+  post {
+    always {
+      sh '''
+        pwd
+        cd virtual && ./vagrant_shutdown.sh
+      '''
+    }
+  }
+}
