@@ -1,52 +1,125 @@
 // Configuration options
 Map matrix_axes = [
-    DEEPOPS_VAGRANT_OS: ['centos', 'ubuntu'],
-    DEEPOPS_FULL_INSTALL: [' ', 'multinode'],
-    DEEPOPS_DEPLOYMENT_PLATFORM: ['slurm', 'k8s']
+  DEEPOPS_VAGRANT_OS: ['centos', 'ubuntu'],
+  DEEPOPS_FULL_INSTALL: [' ', 'multinode'],
+  DEEPOPS_DEPLOYMENT_PLATFORM: ['slurm', 'k8s']
 ]
+
 
 // Default values
 String GPUCOUNT = 1 // Default to 1 GPU resource, use 2 if in 'multinode'
 Map tasks = [failFast: false] // Map that will hold all 'tasks' to run, failFast to continue in case of a single failure
-List axes = getMatrixAxes(matrix_axes).findAll { axis -> 1 == 1 } 
+List axes = getMatrixAxes(matrix_axes).findAll { axis -> 1 == 1 } // List of combinations
+
 
 // Template code to convert matrix above into a usable list of configuration combinations
 @NonCPS
 List getMatrixAxes(Map matrix_axes) {
-    List axes = []
-    matrix_axes.each { axis, values ->
-        List axisList = []
-        values.each { value ->
-            axisList << [(axis): value]
-        }
-        axes << axisList
+  List axes = []
+  matrix_axes.each { axis, values ->
+    List axisList = []
+    values.each { value ->
+      axisList << [(axis): value]
     }
-    // calculate cartesian product
-    axes.combinations()*.sum()
+    axes << axisList
+  }
+  axes.combinations()*.sum()
 }
 
 
 
 for(int i = 0; i < axes.size(); i++) {
-    // convert the Axis into valid values for withEnv step
-    Map axis = axes[i]
-    List axisEnv = axis.collect { k, v ->
-        "${k}=${v}"
-    }
-    tasks[axisEnv.join(', ')] = { ->
-        node() {
-            withEnv(axisEnv) {
-    		if ("$DEEPOPS_FULL_INSTALL" == "multinode") {
-      GPUCOUNT=2
-    }
-                lock(resource: null, label: 'gpu', quantity: "${GPUCOUNT}", variable: 'GPUDATA') {
-                  stage("$DEEPOPS_DEPLOYMENT_PLATFORM-$DEEPOPS_VAGRANT_OS-$DEEPOPS_FULL_INSTALL") {
-                      sh 'echo Do Build for $DEEPOPS_DEPLOYMENT_PLATFORM-$DEEPOPS_VAGRANT_OS-$DEEPOPS_FULL_INSTALL-$GPUCOUNT'
-                  }
-                }
-            }
+  // convert the Axis into valid values for withEnv step
+  Map axis = axes[i]
+  List axisEnv = axis.collect { k, v ->
+    "${k}=${v}"
+  }
+  tasks[axisEnv.join(', ')] = { ->
+    node() {
+      withEnv(axisEnv) {
+        if("$DEEPOPS_FULL_INSTALL" == "multinode") {
+          GPUCOUNT=2
         }
+        lock(resource: null, label: 'gpu', quantity: "${GPUCOUNT}", variable: 'GPUDATA') {
+          stages {
+            stage('Initial Setup') {
+              steps {          
+                echo "Munge files for testing"
+                sh '''
+                  bash -x ./.jenkins-scripts/munge-files.sh
+                '''
+
+                echo "Vagrant Up"
+                sh '''
+                  bash -x ./.jenkins-scripts/vagrant-startup.sh
+                '''
+              }
+            }
+            stage('Deployment') {
+              steps {
+                if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "slurm") {
+                  echo "Set up Slurm"
+                  sh '''
+                    bash -x ./.jenkins-scripts/test-setup-slurm.sh
+                  '''
+
+                  echo "Test Slurm"
+                  sh '''
+                    timeout 60 bash -x ./.jenkins-scripts/test-slurm-job.sh
+                  '''
+                }
+                if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "k8s") {
+                  echo "Cluster Up - Multiple GPU & MGMT Nodes"
+                  sh '''
+                    bash -x ./.jenkins-scripts/test-cluster-up.sh
+                  '''
+
+                  echo "Verify we can run a GPU job"
+                  sh '''
+                    timeout 500 bash -x ./.jenkins-scripts/run-gpu-job.sh
+                  '''
+
+                  echo "Verify ingress config"
+                  sh '''
+                    bash -x ./.jenkins-scripts/verify-ingress-config.sh
+                  '''
+
+                  echo "Test Rook+Ceph installation"
+                  sh '''
+                    timeout 2200 bash -x ./.jenkins-scripts/test-ceph.sh
+                  '''
+
+                  echo "Test Kubeflow installation"
+                  sh '''
+                    timeout 1500 bash -x ./.jenkins-scripts/test-kubeflow.sh
+                  '''
+
+                  echo "Test Monitoring installation"
+                  sh '''
+                    timeout 800 bash -x ./.jenkins-scripts/test-monitoring.sh
+                  '''
+
+                  echo "Test Dashboard installation"
+                  sh '''
+                    timeout 180 bash -x ./.jenkins-scripts/test-dashboard.sh
+                  '''
+
+                }
+              }
+            }
+          }
+          post {
+            always {
+              sh '''
+                pwd
+                cd virtual && ./vagrant_shutdown.sh
+              '''
+            }
+          }
+        }
+      }
     }
+  }
 }
 
 stage("Matrix builds") {
