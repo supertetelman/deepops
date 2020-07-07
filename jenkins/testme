@@ -33,7 +33,6 @@ for(int i = 0; i < axes.size(); i++) {
         node() {
             withEnv(axisEnv) {
        GPUCOUNT=1
-String GPUCOUNT=1
     		if ("$DEEPOPS_FULL_INSTALL" == "multinode") {
       GPUCOUNT=2
     }
