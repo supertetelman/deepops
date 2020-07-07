@@ -43,77 +43,20 @@ for(int i = 0; i < axes.size(); i++) {
         lock(resource: null, label: 'gpu', quantity: "${GPUCOUNT}", variable: 'GPUDATA') {
           stages {
             stage('Initial Setup') {
-              steps {          
                 echo "Munge files for testing"
-                sh '''
-                  bash -x ./.jenkins-scripts/munge-files.sh
-                '''
-
-                echo "Vagrant Up"
-                sh '''
-                  bash -x ./.jenkins-scripts/vagrant-startup.sh
-                '''
-              }
             }
             stage('Deployment') {
-              steps {
                 if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "slurm") {
                   echo "Set up Slurm"
-                  sh '''
-                    bash -x ./.jenkins-scripts/test-setup-slurm.sh
-                  '''
-
-                  echo "Test Slurm"
-                  sh '''
-                    timeout 60 bash -x ./.jenkins-scripts/test-slurm-job.sh
-                  '''
                 }
                 if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "k8s") {
-                  echo "Cluster Up - Multiple GPU & MGMT Nodes"
-                  sh '''
-                    bash -x ./.jenkins-scripts/test-cluster-up.sh
-                  '''
-
-                  echo "Verify we can run a GPU job"
-                  sh '''
-                    timeout 500 bash -x ./.jenkins-scripts/run-gpu-job.sh
-                  '''
-
-                  echo "Verify ingress config"
-                  sh '''
-                    bash -x ./.jenkins-scripts/verify-ingress-config.sh
-                  '''
-
-                  echo "Test Rook+Ceph installation"
-                  sh '''
-                    timeout 2200 bash -x ./.jenkins-scripts/test-ceph.sh
-                  '''
-
-                  echo "Test Kubeflow installation"
-                  sh '''
-                    timeout 1500 bash -x ./.jenkins-scripts/test-kubeflow.sh
-                  '''
-
-                  echo "Test Monitoring installation"
-                  sh '''
-                    timeout 800 bash -x ./.jenkins-scripts/test-monitoring.sh
-                  '''
-
-                  echo "Test Dashboard installation"
-                  sh '''
-                    timeout 180 bash -x ./.jenkins-scripts/test-dashboard.sh
-                  '''
-
+                  echo "K8S"
                 }
-              }
             }
           }
           post {
             always {
-              sh '''
-                pwd
-                cd virtual && ./vagrant_shutdown.sh
-              '''
+              echo "POST"
             }
           }
         }
