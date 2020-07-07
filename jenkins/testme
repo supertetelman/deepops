@@ -1,9 +1,16 @@
+// Configuration options
 Map matrix_axes = [
     DEEPOPS_VAGRANT_OS: ['centos', 'ubuntu'],
     DEEPOPS_FULL_INSTALL: [' ', 'multinode'],
     DEEPOPS_DEPLOYMENT_PLATFORM: ['slurm', 'k8s']
 ]
 
+// Default values
+String GPUCOUNT = 1 // Default to 1 GPU resource, use 2 if in 'multinode'
+Map tasks = [failFast: false] // Map that will hold all 'tasks' to run, failFast to continue in case of a single failure
+List axes = getMatrixAxes(matrix_axes).findAll { axis -> 1 == 1 } 
+
+// Template code to convert matrix above into a usable list of configuration combinations
 @NonCPS
 List getMatrixAxes(Map matrix_axes) {
     List axes = []
@@ -18,10 +25,7 @@ List getMatrixAxes(Map matrix_axes) {
     axes.combinations()*.sum()
 }
 
-String GPUCOUNT = 1
-Map tasks = [failFast: false]
 
-List axes = getMatrixAxes(matrix_axes).findAll { axis -> 1 == 1 }
 
 for(int i = 0; i < axes.size(); i++) {
     // convert the Axis into valid values for withEnv step
