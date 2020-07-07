@@ -42,6 +42,12 @@ for(int i = 0; i < axes.size(); i++) {
         }
         lock(resource: null, label: 'gpu', quantity: "${GPUCOUNT}", variable: 'GPUDATA') {
           stage('Initial Setup') {
+            echo "Initial Debug"
+            sh '''
+              pwd
+              ls *
+            '''
+
             echo "Munge files for testing"
             sh '''
               bash -x ./.jenkins-scripts/munge-files.sh
