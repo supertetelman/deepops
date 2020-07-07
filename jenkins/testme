@@ -1,23 +1,8 @@
 Map matrix_axes = [
-
     DEEPOPS_VAGRANT_OS: ['centos', 'ubuntu'],
     DEEPOPS_FULL_INSTALL: [' ', 'multinode'],
     DEEPOPS_DEPLOYMENT_PLATFORM: ['slurm', 'k8s']
 ]
-
-@NonCPS
-List getMatrixAxes(Map matrix_axes) {
-    List axes = []
-    matrix_axes.each { axis, values ->
-        List axisList = []
-        values.each { value ->
-            axisList << [(axis): value]
-        }
-        axes << axisList
-    }
-    // calculate cartesian product
-    axes.combinations()*.sum()
-}
 
 Map response = [:]
 stage("Choose combinations") {
@@ -40,14 +25,24 @@ stage("Choose combinations") {
         ])
 }
 
-// filter the matrix axes since
-// Safari is not available on Linux and
-// Edge is only available on Windows
+
+@NonCPS
+List getMatrixAxes(Map matrix_axes) {
+    List axes = []
+    matrix_axes.each { axis, values ->
+        List axisList = []
+        values.each { value ->
+            axisList << [(axis): value]
+        }
+        axes << axisList
+    }
+    // calculate cartesian product
+    axes.combinations()*.sum()
+}
+
 Map tasks = [failFast: false]
 
-List axes = getMatrixAxes(matrix_axes).findAll { axis ->
-    1 == 1
-}
+List axes = getMatrixAxes(matrix_axes).findAll { }
 
 for(int i = 0; i < axes.size(); i++) {
     // convert the Axis into valid values for withEnv step
