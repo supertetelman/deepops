@@ -65,6 +65,12 @@ for(int i = 0; i < axes.size(); i++) {
             checkout([$class: 'GitSCM', branches: [[name: "*/$DEEPOPS_BRANCH"]],
               userRemoteConfigs: [[url: "$DEEPOPS_REPO"]]]) // TODO: There is a timing bug here where this is pegged to a branch, not necessarily commit ID across tasks
 
+            echo "Tear down any Vagrant that was not cleaned up"
+            sh '''
+              pwd
+              cd virtual && ./vagrant_shutdown.sh
+            '''
+
             echo "Munge files for testing"
             sh '''
               bash -x ./.jenkins-scripts/munge-files.sh
