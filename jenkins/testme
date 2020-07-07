@@ -7,6 +7,14 @@ Map matrix_axes = [
   DEEPOPS_REPO: ['https://github.com/NVIDIA/deepops.git']
 ]
 
+if("$DEEPOPS_SINGLE_RUN" == "true") {
+    DEEPOPS_VAGRANT_OS: ["$DEEPOPS_VAGRANT_OS"],
+    DEEPOPS_FULL_INSTALL: ["$DEEPOPS_FULL_INSTALL"],
+    DEEPOPS_DEPLOYMENT_PLATFORM: ["$DEEPOPS_DEPLOYMENT_PLATFORM"],
+    DEEPOPS_BRANCH: ["$DEEPOPS_BRANCH"],
+    DEEPOPS_REPO: ["$DEEPOPS_REPO"]
+  ]
+}
 
 // Default values
 String GPUCOUNT = 1 // Default to 1 GPU resource, use 2 if in 'multinode'
