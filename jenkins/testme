@@ -35,7 +35,7 @@ for(int i = 0; i < axes.size(); i++) {
     }
     String nodeLabel = "os:${axis['PLATFORM']} && browser:${axis['BROWSER']}"
     tasks[axisEnv.join(', ')] = { ->
-        node(nodeLabel) {
+        node() {
             withEnv(axisEnv) {
                 stage("Build") {
                     echo nodeLabel
