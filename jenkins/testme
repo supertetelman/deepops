@@ -1,7 +1,7 @@
 Map matrix_axes = [
 
     DEEPOPS_VAGRANT_OS: ['centos', 'ubuntu'],
-    DEEPOPS_FULL_INSTALL: ['', 'true'],
+    DEEPOPS_FULL_INSTALL: ['', 'multinode'],
     DEEPOPS_DEPLOYMENT_PLATFORM: ['slurm', 'k8s']
 ]
 
@@ -55,7 +55,7 @@ for(int i = 0; i < axes.size(); i++) {
         node() {
             withEnv(axisEnv) {
                 stage("$DEEPOPS_DEPLOYMENT_PLATFORM-$DEEPOPS_VAGRANT_OS-$DEEPOPS_FULL_INSTALL") {
-                    sh 'echo Do Build for $DEEPOPS_DEPLOYMENT_PLATFORM-$DEEPOPS_VAGRANT_OS-$DEEPOPS_FULL_INSTALL"'
+                    sh 'echo Do Build for $DEEPOPS_DEPLOYMENT_PLATFORM-$DEEPOPS_VAGRANT_OS-$DEEPOPS_FULL_INSTALL'
                 }
             }
         }
