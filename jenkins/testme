@@ -138,27 +138,3 @@ stage('Stop Any Old Builds') {
 stage("Matrix builds") {
     parallel(tasks)
 }
-            always {
-              sh '''
-                pwd
-                cd virtual && ./vagrant_shutdown.sh
-              '''
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-
-stage('Stop Any Old Builds') {
-  steps {
-    milestone label: '', ordinal:  Integer.parseInt(env.BUILD_ID) - 1
-    milestone label: '', ordinal:  Integer.parseInt(env.BUILD_ID)
-  }
-}
-
-stage("Matrix builds") {
-    parallel(tasks)
-}
