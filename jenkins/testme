@@ -1,4 +1,5 @@
 Map matrix_axes = [
+
     PLATFORM: ['linux', 'windows', 'mac'],
     BROWSER: ['firefox', 'chrome', 'safari', 'edge']
 ]
@@ -15,6 +16,23 @@ List getMatrixAxes(Map matrix_axes) {
     }
     // calculate cartesian product
     axes.combinations()*.sum()
+}
+
+Map response = [:]
+stage("Choose combinations") {
+    response = input(
+        id: 'Platform',
+        message: 'Customize your matrix build.',
+        parameters: [
+            choice(
+                choices: ['all', 'linux', 'mac', 'windows'],
+                description: 'Choose a single platform or all platforms to run tests.',
+                name: 'PLATFORM'),
+            choice(
+                choices: ['all', 'chrome', 'edge', 'firefox', 'safari'],
+                description: 'Choose a single browser or all browsers to run tests.',
+                name: 'BROWSER')
+        ])
 }
 
 // filter the matrix axes since
