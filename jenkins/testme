@@ -18,7 +18,7 @@ List getMatrixAxes(Map matrix_axes) {
     axes.combinations()*.sum()
 }
 
-String GPUCOUNT=1
+def GPUCOUNT=1
 Map tasks = [failFast: false]
 
 List axes = getMatrixAxes(matrix_axes).findAll { axis -> 1 == 1 }
