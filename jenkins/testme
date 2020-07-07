@@ -132,10 +132,8 @@ for(int i = 0; i < axes.size(); i++) {
 
 
 stage('Stop Any Old Builds') {
-  steps {
-    milestone label: '', ordinal:  Integer.parseInt(env.BUILD_ID) - 1
-    milestone label: '', ordinal:  Integer.parseInt(env.BUILD_ID)
-  }
+  milestone label: '', ordinal:  Integer.parseInt(env.BUILD_ID) - 1
+  milestone label: '', ordinal:  Integer.parseInt(env.BUILD_ID)
 }
 
 stage("Matrix builds") {
