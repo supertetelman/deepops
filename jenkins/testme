@@ -20,7 +20,11 @@ List getMatrixAxes(Map matrix_axes) {
 // filter the matrix axes since
 // Safari is not available on Linux and
 // Edge is only available on Windows
-List axes = getMatrixAxes(matrix_axes)
+
+List axes = getMatrixAxes(matrix_axes).findAll { axis ->
+    !(axis['BROWSER'] == 'safari' && axis['PLATFORM'] == 'linux') &&
+    !(axis['BROWSER'] == 'edge' && axis['PLATFORM'] != 'windows')
+}
 
 for(int i = 0; i < axes.size(); i++) {
     // convert the Axis into valid values for withEnv step
