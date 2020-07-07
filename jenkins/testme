@@ -54,7 +54,7 @@ for(int i = 0; i < axes.size(); i++) {
     tasks[axisEnv.join(', ')] = { ->
         node() {
             withEnv(axisEnv) {
-                stage("$DEEPOPS_DEPLOYMENT_PLATFORM-$DEEPOPS_VAGRANT_OS-$DEEPOPS_FULL_INSTALL") }
+                stage("$DEEPOPS_DEPLOYMENT_PLATFORM-$DEEPOPS_VAGRANT_OS-$DEEPOPS_FULL_INSTALL") {
                     sh 'echo Do Build for $DEEPOPS_DEPLOYMENT_PLATFORM-$DEEPOPS_VAGRANT_OS-$DEEPOPS_FULL_INSTALL"'
                 }
             }
