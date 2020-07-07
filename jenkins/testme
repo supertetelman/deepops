@@ -3,6 +3,7 @@ Map matrix_axes = [
   DEEPOPS_VAGRANT_OS: ['centos', 'ubuntu'],
   DEEPOPS_FULL_INSTALL: [' ', 'multinode'],
   DEEPOPS_DEPLOYMENT_PLATFORM: ['slurm', 'k8s']
+  DEEPOPS_BRANCH: ['master']
 ]
 
 
@@ -41,7 +42,7 @@ for(int i = 0; i < axes.size(); i++) {
           GPUCOUNT=2
         }
         lock(resource: null, label: 'gpu', quantity: "${GPUCOUNT}", variable: 'GPUDATA') {
-          stage('Initial Setup') {
+          stage('Setup-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}') {
             echo "Initial Debug"
             sh '''
               pwd
@@ -58,20 +59,21 @@ for(int i = 0; i < axes.size(); i++) {
               bash -x ./.jenkins-scripts/vagrant-startup.sh
             '''
           }
-          stage('Deployment') {
+
+          stage('Deployment-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}') {
             if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "slurm") {
               echo "Set up Slurm"
               sh '''
                 bash -x ./.jenkins-scripts/test-setup-slurm.sh
               '''
 
-              echo "Test Slurm"
+              echo "Verify we can run a GPU job"
               sh '''
                 timeout 60 bash -x ./.jenkins-scripts/test-slurm-job.sh
               '''
             }
             if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "k8s") {
-              echo "Cluster Up - Multiple GPU & MGMT Nodes"
+              echo "Set up K8S"
               sh '''
                 bash -x ./.jenkins-scripts/test-cluster-up.sh
               '''
@@ -80,7 +82,13 @@ for(int i = 0; i < axes.size(); i++) {
               sh '''
                 timeout 500 bash -x ./.jenkins-scripts/run-gpu-job.sh
               '''
+            }
 
+          stage('Services-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}') {
+            if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "slurm") {
+              echo "No Slurm Service Tests"
+            }
+            if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "k8s") {
               echo "Verify ingress config"
               sh '''
                 bash -x ./.jenkins-scripts/verify-ingress-config.sh
@@ -106,6 +114,30 @@ for(int i = 0; i < axes.size(); i++) {
                 timeout 180 bash -x ./.jenkins-scripts/test-dashboard.sh
               '''
             }
+          }
+          always {
+            sh '''
+              pwd
+              cd virtual && ./vagrant_shutdown.sh
+            '''
+          }
+        }
+      }
+    }
+  }
+}
+
+
+stage('Stop Any Old Builds') {
+  steps {
+    milestone label: '', ordinal:  Integer.parseInt(env.BUILD_ID) - 1
+    milestone label: '', ordinal:  Integer.parseInt(env.BUILD_ID)
+  }
+}
+
+stage("Matrix builds") {
+    parallel(tasks)
+}
             always {
               sh '''
                 pwd
@@ -116,6 +148,14 @@ for(int i = 0; i < axes.size(); i++) {
         }
       }
     }
+  }
+}
+
+
+stage('Stop Any Old Builds') {
+  steps {
+    milestone label: '', ordinal:  Integer.parseInt(env.BUILD_ID) - 1
+    milestone label: '', ordinal:  Integer.parseInt(env.BUILD_ID)
   }
 }
 
