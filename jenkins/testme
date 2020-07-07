@@ -20,7 +20,7 @@ List getMatrixAxes(Map matrix_axes) {
 // filter the matrix axes since
 // Safari is not available on Linux and
 // Edge is only available on Windows
-List axes = getMatrixAxes(matrix_axes)
+List axes = getMatrixAxes(matrix_axes).findall { axis -> }
 
 for(int i = 0; i < axes.size(); i++) {
     // convert the Axis into valid values for withEnv step
@@ -28,18 +28,11 @@ for(int i = 0; i < axes.size(); i++) {
     List axisEnv = axis.collect { k, v ->
         "${k}=${v}"
     }
-    // let's say you have diverse agents among Windows, Mac and Linux all of
-    // which have proper labels for their platform and what browsers are
-    // available on those agents.
     String nodeLabel = "os:${axis['PLATFORM']} && browser:${axis['BROWSER']}"
     tasks[axisEnv.join(', ')] = { ->
         node(nodeLabel) {
             withEnv(axisEnv) {
                 stage("Build") {
-                    echo nodeLabel
-                    sh 'echo Do Build for ${PLATFORM} - ${BROWSER}'
-                }
-                stage("Test") {
                     echo nodeLabel
                     sh 'echo Do Build for ${PLATFORM} - ${BROWSER}'
                 }
