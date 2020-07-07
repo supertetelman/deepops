@@ -65,15 +65,15 @@ for(int i = 0; i < axes.size(); i++) {
             checkout([$class: 'GitSCM', branches: [[name: "*/$DEEPOPS_BRANCH"]],
               userRemoteConfigs: [[url: "$DEEPOPS_REPO"]]]) // TODO: There is a timing bug here where this is pegged to a branch, not necessarily commit ID across tasks
 
+            echo "Munge files for testing"
+            sh '''
+              bash -x ./.jenkins-scripts/munge-files.sh
+            '''
+
             echo "Tear down any Vagrant that was not cleaned up"
             sh '''
               pwd
               cd virtual && ./vagrant_shutdown.sh || true
-            '''
-
-            echo "Munge files for testing"
-            sh '''
-              bash -x ./.jenkins-scripts/munge-files.sh
             '''
 
             echo "Vagrant Up"
@@ -145,7 +145,7 @@ for(int i = 0; i < axes.size(); i++) {
             }
           }
         }
-        // XXX: Not sure if the cleanup should live inside or outside of the lock
+        // XXX: Not sure if the cleanup should live inside or outside of the lock. Also, this doesn't seem to work.
         post {
           always {
             echo "Final cleanup"
