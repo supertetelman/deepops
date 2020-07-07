@@ -32,11 +32,12 @@ for(int i = 0; i < axes.size(); i++) {
     tasks[axisEnv.join(', ')] = { ->
         node() {
             withEnv(axisEnv) {
-GPUCOUNT=1
+       GPUCOUNT=1
+String GPUCOUNT=1
     		if ("$DEEPOPS_FULL_INSTALL" == "multinode") {
       GPUCOUNT=2
     }
-                lock(resource: null, label: 'gpu', quantity: $GPUCOUNT, variable: 'GPUDATA') {
+                lock(resource: null, label: 'gpu', quantity: "${GPUCOUNT}", variable: 'GPUDATA') {
                   stage("$DEEPOPS_DEPLOYMENT_PLATFORM-$DEEPOPS_VAGRANT_OS-$DEEPOPS_FULL_INSTALL") {
                       sh 'echo Do Build for $DEEPOPS_DEPLOYMENT_PLATFORM-$DEEPOPS_VAGRANT_OS-$DEEPOPS_FULL_INSTALL-$GPUCOUNT'
                   }
