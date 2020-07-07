@@ -7,6 +7,7 @@ Map matrix_axes = [
   DEEPOPS_REPO: ['https://github.com/NVIDIA/deepops.git']
 ]
 
+// Override default values as specified by the manual builds
 if("$DEEPOPS_VAGRANT_OS" != "all") {
   matrix_axes['DEEPOPS_VAGRANT_OS'] = ["$DEEPOPS_VAGRANT_OS"]
 }
@@ -44,7 +45,7 @@ List getMatrixAxes(Map matrix_axes) {
 }
 
 
-
+// Generate a 'task' for each of the valid combinations
 for(int i = 0; i < axes.size(); i++) {
   // convert the Axis into valid values for withEnv step
   Map axis = axes[i]
@@ -57,23 +58,12 @@ for(int i = 0; i < axes.size(); i++) {
         if("$DEEPOPS_FULL_INSTALL" == "multinode") {
           GPUCOUNT=2
         }
+
         lock(resource: null, label: 'gpu', quantity: "${GPUCOUNT}", variable: 'GPUDATA') {
 
           stage("Setup-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}") {
-            echo "Initial Debug"
-            sh '''
-              pwd
-              ls 
-            '''
-
             checkout([$class: 'GitSCM', branches: [[name: "*/$DEEPOPS_BRANCH"]],
               userRemoteConfigs: [[url: "$DEEPOPS_REPO"]]])
-
-            echo "Initial Debug"
-            sh '''
-              pwd
-              ls 
-            '''
 
             echo "Munge files for testing"
             sh '''
@@ -148,15 +138,14 @@ for(int i = 0; i < axes.size(); i++) {
               '''
             }
           }
-
-          always {
-            echo "Final cleanup"
-            sh '''
-              pwd
-              cd virtual && ./vagrant_shutdown.sh
-            '''
-          }
-
+        }
+        // XXX: Not sure if the cleanup should live inside or outside of the lock
+        always {
+          echo "Final cleanup"
+          sh '''
+            pwd
+            cd virtual && ./vagrant_shutdown.sh
+          '''
         }
       }
     }
@@ -164,10 +153,12 @@ for(int i = 0; i < axes.size(); i++) {
 }
 
 
+/*
 stage('Stop Any Old Builds') {
   milestone label: '', ordinal:  Integer.parseInt(env.BUILD_ID) - 1
   milestone label: '', ordinal:  Integer.parseInt(env.BUILD_ID)
 }
+*/
 
 stage("Matrix builds") {
     parallel(tasks)
