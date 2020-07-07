@@ -7,6 +7,10 @@ Map matrix_axes = [
   DEEPOPS_REPO: ['https://github.com/NVIDIA/deepops.git']
 ]
 
+if("$DEEPOPS_VAGRANT_OS" != "all) {
+  matrix_axes['DEEPOPS_VAGRANT_OS'] = ["$DEEPOPS_VAGRANT_OS"]
+}
+
 if("$DEEPOPS_SINGLE_RUN" == "true") {
   matrix_axes = [
     DEEPOPS_VAGRANT_OS: ["$DEEPOPS_VAGRANT_OS"],
