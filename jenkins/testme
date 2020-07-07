@@ -20,7 +20,7 @@ List getMatrixAxes(Map matrix_axes) {
 
 Map tasks = [failFast: false]
 
-List axes = getMatrixAxes(matrix_axes).findAll { axis }
+List axes = getMatrixAxes(matrix_axes).findAll { axis -> 1 == 1 }
 
 for(int i = 0; i < axes.size(); i++) {
     // convert the Axis into valid values for withEnv step
