@@ -45,24 +45,14 @@ for(int i = 0; i < axes.size(); i++) {
                 echo "Munge files for testing"
             }
             stage('Deployment') {
-                if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "slurm") {
-                  echo "Set up Slurm"
-                }
-                if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "k8s") {
                   echo "K8S"
-                }
             }
           }
         }
       }
     }
   }
-}
 
 stage("Matrix builds") {
     parallel(tasks)
 }
-          post {
-            always {
-              echo "POST"
-            }
