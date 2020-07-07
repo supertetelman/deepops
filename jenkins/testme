@@ -129,6 +129,7 @@ for(int i = 0; i < axes.size(); i++) {
           }
 
           always {
+            echo "Final cleanup"
             sh '''
               pwd
               cd virtual && ./vagrant_shutdown.sh
