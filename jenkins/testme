@@ -63,7 +63,7 @@ for(int i = 0; i < axes.size(); i++) {
 
           stage("Setup-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}") {
             checkout([$class: 'GitSCM', branches: [[name: "*/$DEEPOPS_BRANCH"]],
-              userRemoteConfigs: [[url: "$DEEPOPS_REPO"]]])
+              userRemoteConfigs: [[url: "$DEEPOPS_REPO"]]]) // TODO: There is a timing bug here where this is pegged to a branch, not necessarily commit ID across tasks
 
             echo "Munge files for testing"
             sh '''
@@ -161,7 +161,5 @@ stage('Stop Any Old Builds') {
 */
 
 stage("Matrix builds") {
-    def gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-    echo "$gitCommit"
     parallel(tasks)
 }
