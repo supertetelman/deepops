@@ -83,6 +83,7 @@ for(int i = 0; i < axes.size(); i++) {
                 timeout 500 bash -x ./.jenkins-scripts/run-gpu-job.sh
               '''
             }
+          }
 
           stage('Services-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}') {
             if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "slurm") {
@@ -115,12 +116,14 @@ for(int i = 0; i < axes.size(); i++) {
               '''
             }
           }
+
           always {
             sh '''
               pwd
               cd virtual && ./vagrant_shutdown.sh
             '''
           }
+
         }
       }
     }
