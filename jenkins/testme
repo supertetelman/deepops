@@ -42,7 +42,7 @@ for(int i = 0; i < axes.size(); i++) {
           GPUCOUNT=2
         }
         lock(resource: null, label: 'gpu', quantity: "${GPUCOUNT}", variable: 'GPUDATA') {
-          stage('Setup-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}') {
+          stage("Setup-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}") {
             echo "Initial Debug"
             sh '''
               pwd
@@ -60,7 +60,7 @@ for(int i = 0; i < axes.size(); i++) {
             '''
           }
 
-          stage('Deployment-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}') {
+          stage("Deployment-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}") {
             if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "slurm") {
               echo "Set up Slurm"
               sh '''
@@ -85,7 +85,7 @@ for(int i = 0; i < axes.size(); i++) {
             }
           }
 
-          stage('Services-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}') {
+          stage("Services-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}") {
             if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "slurm") {
               echo "No Slurm Service Tests"
             }
