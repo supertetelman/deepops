@@ -41,7 +41,6 @@ for(int i = 0; i < axes.size(); i++) {
           GPUCOUNT=2
         }
         lock(resource: null, label: 'gpu', quantity: "${GPUCOUNT}", variable: 'GPUDATA') {
-          stages {
             stage('Initial Setup') {
                 echo "Munge files for testing"
             }
@@ -54,11 +53,6 @@ for(int i = 0; i < axes.size(); i++) {
                 }
             }
           }
-          post {
-            always {
-              echo "POST"
-            }
-          }
         }
       }
     }
@@ -68,3 +62,7 @@ for(int i = 0; i < axes.size(); i++) {
 stage("Matrix builds") {
     parallel(tasks)
 }
+          post {
+            always {
+              echo "POST"
+            }
