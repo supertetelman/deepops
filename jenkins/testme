@@ -20,6 +20,7 @@ List getMatrixAxes(Map matrix_axes) {
 // filter the matrix axes since
 // Safari is not available on Linux and
 // Edge is only available on Windows
+Map tasks = [failFast: false]
 
 List axes = getMatrixAxes(matrix_axes).findAll { axis ->
     !(axis['BROWSER'] == 'safari' && axis['PLATFORM'] == 'linux') &&
