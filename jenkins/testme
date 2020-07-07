@@ -45,7 +45,7 @@ for(int i = 0; i < axes.size(); i++) {
             echo "Initial Debug"
             sh '''
               pwd
-              ls *
+              ls 
             '''
 
             echo "Munge files for testing"
