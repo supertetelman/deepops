@@ -162,6 +162,6 @@ stage('Stop Any Old Builds') {
 
 stage("Matrix builds") {
     // gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-    echo "$gitCommit"
+    echo "gitCommit"
     parallel(tasks)
 }
