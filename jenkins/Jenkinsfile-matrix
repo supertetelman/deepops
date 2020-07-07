@@ -1,0 +1,32 @@
+pipeline {
+  agent none
+  environment {
+    DEEPOPS_FULL_INSTALL = ''
+    DEEPOPS_VAGRANT_OS = 'ubuntu'
+  }
+  stages {
+    stage('Cluster Up') {
+      matrix {
+        agent any
+        axes {
+          axis {
+            name 'DEEPOPS_PLATFORM_DEPLOYMENT'
+            values 'k8s', 'slurm'
+          }
+          axis {
+            name 'DEEPOPS_VAGRANT_OS'
+            values 'ubuntu', 'centos'
+          }
+          axis {
+            name 'DEEPOPS_FULL_INSTALL'
+            values '', 'true'
+          }
+        }
+      stages {
+        stage('DeployAndTest') {
+          echo "${DEEPOPS_FULL_INSTALL} - ${DEEPOPS_VAGRANT_OS} - ${DEEPOPS_PLATFORM_DEPLOYMENT}"
+	}
+      }
+    }
+  }
+}
