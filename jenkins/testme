@@ -18,6 +18,7 @@ List getMatrixAxes(Map matrix_axes) {
     axes.combinations()*.sum()
 }
 
+String GPUCOUNT=1
 Map tasks = [failFast: false]
 
 List axes = getMatrixAxes(matrix_axes).findAll { axis -> 1 == 1 }
@@ -31,8 +32,11 @@ for(int i = 0; i < axes.size(); i++) {
     tasks[axisEnv.join(', ')] = { ->
         node() {
             withEnv(axisEnv) {
+                if ("$DEEPOPS_FULL_INSTALL" == "multinode") {
+		  GPUCOUNT=2
+		}
                 stage("$DEEPOPS_DEPLOYMENT_PLATFORM-$DEEPOPS_VAGRANT_OS-$DEEPOPS_FULL_INSTALL") {
-                    sh 'echo Do Build for $DEEPOPS_DEPLOYMENT_PLATFORM-$DEEPOPS_VAGRANT_OS-$DEEPOPS_FULL_INSTALL'
+                    sh 'echo Do Build for $DEEPOPS_DEPLOYMENT_PLATFORM-$DEEPOPS_VAGRANT_OS-$DEEPOPS_FULL_INSTALL-$GPUCOUNT'
                 }
             }
         }
