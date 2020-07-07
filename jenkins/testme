@@ -26,13 +26,17 @@ stage("Choose combinations") {
         message: 'Customize your matrix build.',
         parameters: [
             choice(
-                choices: ['all', 'linux', 'mac', 'windows'],
-                description: 'Choose a single platform or all platforms to run tests.',
-                name: 'PLATFORM'),
+                choices: ['centos', 'ubuntu'],
+                description: '',
+                name: 'DEEPOPS_VAGRANT_OS'),
             choice(
-                choices: ['all', 'chrome', 'edge', 'firefox', 'safari'],
-                description: 'Choose a single browser or all browsers to run tests.',
-                name: 'BROWSER')
+                choices: ['slurm', 'k8s'],
+                description: '',
+                name: 'DEEPOPS_DEPLOYMENT_PLATFORM'),
+            choice(
+                choices: [' ', 'multinode'],
+                description: '',
+                name: 'DEEPOPS_FULL_INSTALL')
         ])
 }
 
