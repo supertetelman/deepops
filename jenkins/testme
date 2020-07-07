@@ -3,6 +3,8 @@ Map matrix_axes = [
   DEEPOPS_VAGRANT_OS: ['centos', 'ubuntu'],
   DEEPOPS_FULL_INSTALL: [' ', 'multinode'],
   DEEPOPS_DEPLOYMENT_PLATFORM: ['slurm', 'k8s'],
+  DEEPOPS_BRANCH: ['master'],
+  DEEPOPS_REPO: ['https://github.com/NVIDIA/deepops.git']
 ]
 
 
