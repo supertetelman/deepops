@@ -4,28 +4,6 @@ Map matrix_axes = [
     DEEPOPS_DEPLOYMENT_PLATFORM: ['slurm', 'k8s']
 ]
 
-Map response = [:]
-stage("Choose combinations") {
-    response = input(
-        id: 'Platform',
-        message: 'Customize your matrix build.',
-        parameters: [
-            choice(
-                choices: ['centos', 'ubuntu'],
-                description: '',
-                name: 'DEEPOPS_VAGRANT_OS'),
-            choice(
-                choices: ['slurm', 'k8s'],
-                description: '',
-                name: 'DEEPOPS_DEPLOYMENT_PLATFORM'),
-            choice(
-                choices: [' ', 'multinode'],
-                description: '',
-                name: 'DEEPOPS_FULL_INSTALL')
-        ])
-}
-
-
 @NonCPS
 List getMatrixAxes(Map matrix_axes) {
     List axes = []
