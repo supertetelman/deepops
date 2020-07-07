@@ -86,8 +86,8 @@ for(int i = 0; i < axes.size(); i++) {
             '''
           }
 
-          stage("Deployment-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}") {
-            if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "slurm") {
+          if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "slurm") {
+            stage("Deployment-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}") {
               echo "Set up Slurm"
               sh '''
                 bash -x ./.jenkins-scripts/test-setup-slurm.sh
@@ -98,7 +98,10 @@ for(int i = 0; i < axes.size(); i++) {
                 timeout 60 bash -x ./.jenkins-scripts/test-slurm-job.sh
               '''
             }
-            if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "k8s") {
+          }
+
+          if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "k8s") {
+            stage("Deployment-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}") {
               echo "Set up K8S"
               sh '''
                 bash -x ./.jenkins-scripts/test-cluster-up.sh
@@ -111,11 +114,14 @@ for(int i = 0; i < axes.size(); i++) {
             }
           }
 
-          stage("Services-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}") {
-            if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "slurm") {
+          if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "slurm") {
+            stage("Services-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}") {
               echo "No Slurm Service Tests"
-            }
-            if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "k8s") {
+            }  
+          }
+
+          if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "k8s") {
+            stage("Services-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}") {
               echo "Verify ingress config"
               sh '''
                 bash -x ./.jenkins-scripts/verify-ingress-config.sh
