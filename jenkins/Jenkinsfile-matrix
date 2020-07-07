@@ -24,7 +24,9 @@ pipeline {
         }
         stages {
           stage('DeployAndTest') {
-            echo "${DEEPOPS_FULL_INSTALL} - ${DEEPOPS_VAGRANT_OS} - ${DEEPOPS_PLATFORM_DEPLOYMENT}"
+            steps {
+              echo "${DEEPOPS_FULL_INSTALL} - ${DEEPOPS_VAGRANT_OS} - ${DEEPOPS_PLATFORM_DEPLOYMENT}"
+            }
           }
         }
       }
