@@ -46,14 +46,13 @@ pipeline {
           '''
         }
       }
-    }
-  }
-  post {
-    always {
+      # TODO: How do we make this always happen using the matrix?
+      steps {
       sh '''
         pwd
         cd virtual && ./vagrant_shutdown.sh
       '''
+      }
     }
   }
 }
