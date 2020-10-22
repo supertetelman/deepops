@@ -1,6 +1,10 @@
 ---
 # Enable/disable MIG mode
 # run with tags --enable or --disable
+# For managing production-clusters this can be done on a rolling per-node basis
+# mig_devices can be specificed per-node in group_vars yml files or at the command line:
+#   ansible-plyabook -l gpu01 -nvidia-mig.yml --tags enable -e "deepops_mig_devices=all"
+#   ansible-plyabook -l gpu02 -nvidia-mig.yml --tags enable -e "deepops_mig_devices=1,2,3"
 - hosts: all
   become: yes
 
@@ -42,7 +46,7 @@
       with_items: "{{ nv_modules }}"
       tags: enable, disable, never
 
-    # Manage MIG
+    # Manage MIG - Enable
     - name: enable MIG mode (all devices)
       command: nvidia-smi -mig 1
       tags: enable, never
@@ -50,7 +54,11 @@
     - name: enable MIG mode (per device)
       command: nvidia-smi -mig 1 -i "{{ deepops_mig_devices }}"
       tags: enable, never
-      when: deepops_mig_devices | default("") != ""
+      when:
+        - deepops_mig_devices | default("") != "all"
+        - deepops_mig_devices | default("") != ""
+
+    # Manage MIG - Disable
     - name: disable MIG mode (all devices)
       command: nvidia-smi -mig 0
       tags: disable, never
@@ -58,8 +66,9 @@
     - name: disable MIG mode (per device)
       command: nvidia-smi -mig 0 -i "{{ deepops_mig_devices }}"
       tags: disable, never
-      when: deepops_mig_devices | default("") != ""
-
+      when:
+        - deepops_mig_devices | default("") != "all"
+        - deepops_mig_devices | default("") != ""
 
     # Post-tasks
     - name: wait for MIG stuff to settle down and nvidia-persistenced to start again
