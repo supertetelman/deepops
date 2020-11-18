@@ -1,0 +1,120 @@
+apiVersion: kubeflow.org/v1alpha2
+kind: MPIJob
+metadata:
+  name: example-mpi-job
+  namespace: anonymous
+spec:
+  slotsPerWorker: 1
+  cleanPodPolicy: Running
+  mpiReplicaSpecs:
+    Launcher:
+      replicas: 1
+      template:
+        metadata:
+          annotations:
+            sidecar.istio.io/inject: "false"
+        spec:
+          volumes:
+          - name: code
+            persistentVolumeClaim:
+              claimName: code
+          - name: data
+            persistentVolumeClaim:
+              claimName: data
+          containers:
+          - image: "nvcr.io/nvidia/tensorflow:20.10-tf1-py3"
+            name: multinode-example
+            volumeMounts:
+            - mountPath: "/mnt"
+              name: code
+            - mountPath: "/data"
+              name: data
+            command:
+            - mpirun
+            - -np
+            - "4"
+            - -bind-to
+            - none
+            - -map-by
+            - slot
+            - -x
+            - NCCL_DEBUG=INFO
+            - -x
+            - LD_LIBRARY_PATH
+            - -x
+            - PATH
+            - -mca
+            - pml
+            - ob1
+            - -mca
+            - btl
+            - ^openib
+            - --allow-run-as-root
+            - python
+            - /mnt/DeepLearningExamples/TensorFlow/LanguageModeling/Transformer-XL/tf/main.py
+            - --data_dir
+            - /data/wikitext-103/tfrecords
+            - --record_info_dir
+            - /data/wikitext-103/tfrecords/
+            - --corpus_info_path
+            - /data/wikitext-103/corpus-info.json
+            - --div_val
+            - "1"
+            - --untie_r
+            - "True"
+            - --proj_share_all_but_first=True
+            - --n_layer
+            - "16"
+            - --d_model
+            - "512"
+            - --d_embed
+            - "512"
+            - --n_head
+            - "8"
+            - --d_head
+            - "64"
+            - --d_inner
+            - "2048"
+            - --dropout
+            - "0.1"
+            - --dropatt
+            - "0.0"
+            - --learning_rate
+            - "0.01"
+            - --warmup_steps
+            - "1000"
+            - --tgt_len
+            - "64"
+            - --mem_len
+            - "192"
+            - "4"
+            - --amp
+            - --batch_chunk
+            - "16"
+    Worker:
+      # The number of workers (M)
+      replicas: 4
+      template:
+        metadata:
+          annotations:
+            sidecar.istio.io/inject: "false"
+        spec:
+          volumes:
+          - name: code
+            persistentVolumeClaim:
+              claimName: code
+          - name: data
+            persistentVolumeClaim:
+              claimName: data
+          containers:
+          - image: "nvcr.io/nvidia/tensorflow:20.10-tf1-py3"
+            name: multinode-example
+            resources:
+              limits:
+                # The number of GPUs per-worker (N)
+                nvidia.com/gpu: 1
+            volumeMounts:
+            - mountPath: "/mnt"
+              name: "code"
+            - mountPath: "/data"
+              name: "data" 
