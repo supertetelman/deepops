@@ -1,0 +1,10 @@
+# Values for the gpu monitoring tools dcgm exporter helm chart
+# See https://github.com/NVIDIA/gpu-monitoring-tools/blob/master/deployment/dcgm-exporter/values.yaml
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: nvidia-gpu
+          operator: Exists

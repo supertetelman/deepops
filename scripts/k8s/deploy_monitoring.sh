@@ -22,10 +22,12 @@ fi
 
 HELM_CHARTS_REPO_PROMETHEUS="${HELM_CHARTS_REPO_PROMETHEUS:-https://prometheus-community.github.io/helm-charts}"
 HELM_PROMETHEUS_CHART_VERSION="${HELM_PROMETHEUS_CHART_VERSION:-10.0.2}"
+HELM_GPU_MONITORING_CHART_VERSION="${HELM_GPU_MONITORING_CHART_VERSION:-2.1.1}"
 ingress_name="ingress-nginx"
 
 PROMETHEUS_YAML_CONFIG="${PROMETHEUS_YAML_CONFIG:-${DEEPOPS_CONFIG_DIR}/helm/monitoring.yml}"
 PROMETHEUS_YAML_NO_PERSIST_CONFIG="${PROMETHEUS_YAML_NO_PERSIST_CONFIG:-${DEEPOPS_CONFIG_DIR}/helm/monitoring-no-persist.yml}"
+GPU_MONITORING_YAML_CONFIG="${PROMETHEUS_YAML_CONFIG:-${DEEPOPS_CONFIG_DIR}/helm/dcgm-exporter.yml}"
 
 function help_me() {
     echo "This script installs the DCGM exporter, Prometheus, Grafana, and configures a GPU Grafana dashboard."
@@ -75,6 +77,7 @@ function get_opts() {
 function delete_monitoring() {
     helm uninstall prometheus-operator
     helm uninstall kube-prometheus-stack -n monitoring
+    helm uninstall dcgm-exporter -n monitoring
     helm uninstall "${ingress_name}"
     helm uninstall "nginx-ingress" # Delete legacy naming
     kubectl delete crd prometheuses.monitoring.coreos.com
@@ -157,15 +160,17 @@ function setup_gpu_monitoring() {
     done
 
     # Deploy DCGM node exporter
-    if kubectl -n monitoring get pod -l app=dcgm-exporter 2>&1 | grep "No resources found." >/dev/null 2>&1 ; then
-        if [ "${DCGM_DOCKER_REGISTRY}" ]; then
-            cat workloads/services/k8s/dcgm-exporter.yml \
-            | sed "s/image: quay.io/image: ${DCGM_DOCKER_REGISTRY}/g" \
-            | sed "s/image: nvcr.io/image: ${DCGM_DOCKER_REGISTRY}/g" \
-            | kubectl create -f -
-        else
-            kubectl create -f workloads/services/k8s/dcgm-exporter.yml
-        fi
+    if ! helm repo list | grep gpu-helm-charts >/dev/null 2>&1 ; then
+      helm repo add gpu-helm-charts https://nvidia.github.io/gpu-monitoring-tools/helm-charts # TODO: Update this to NGC when possible
+      helm repo update # TODO: Do we need to do repo update twice in this script?
+    fi
+    if ! helm status -n monitoring dcgm-exporter >/dev/null 2>&1 ; then
+        helm upgrade --install \
+            dcgm-exporter \
+            gpu-helm-charts/dcgm-exporter \
+            --version "${HELM_GPU_MONITORING_CHART_VERSION}" \
+            --values "${GPU_MONITORING_YAML_CONFIG}" \
+            --namespace monitoring
     fi
 }
 
