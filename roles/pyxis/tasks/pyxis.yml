@@ -61,3 +61,14 @@
   file:
     path: "/usr/local/src/pyxis/spank_pyxis.so"
     mode: 0755
+
+- name: Update RedHat specific kernel params for enroot
+  sysctl:
+    name: "{{ item }}"
+    value: 1
+    reload: yes
+    state: present
+  with_items:
+    - "namespace.unpriv_enable"
+    - "user_namespace.enable"
+  when: ansible_os_family == "RedHat"
