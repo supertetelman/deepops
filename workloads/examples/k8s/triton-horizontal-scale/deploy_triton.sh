@@ -52,5 +52,6 @@ kubectl create -f workloads/examples/k8s/triton-horizontal-scale/hpa.yml  -n dee
 # TODO:
 
 # Run stress test
-# TODO:
+URL=$(kubectl -n deepops-triton get svc nvidia-tritoninferenceserver -ojsonpath='{.spec.clusterIP}')
+docker run -it nvcr.io/nvidia/tritonserver:20.09-py3-clientsdk bash -c "/workspace/install/bin/image_client -m densenet_onnx /workspace/images/mug.jpg -u $URL:8000"
 

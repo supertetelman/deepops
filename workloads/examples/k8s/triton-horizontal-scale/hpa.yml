@@ -14,7 +14,7 @@ spec:
   - type: Object
     object:
       metric:
-        name: avg_time_queue_ms
+        name: nv_inference_custom_avg_time_queue_ms
       describedObject:
         apiVersion: /v1
         kind: Namespace
