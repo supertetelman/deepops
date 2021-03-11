@@ -43,3 +43,14 @@ helm install prometheus-community/prometheus-adapter    --namespace monitoring  
 echo 'Run command to verify metrics
 
 kubectl get --raw "/apis/custom.metrics.k8s.io/v1beta1/namespaces/deepops-triton/pods/*/nv_inference_queue_duration_us" | jq .'
+
+
+# Deploy horizontal auto scaler
+kubectl create -f workloads/examples/k8s/triton-horizontal-scale/hpa.yml  -n deepops-triton
+
+# Import Grafana dashboard
+# TODO:
+
+# Run stress test
+# TODO:
+
