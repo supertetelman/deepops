@@ -240,3 +240,7 @@ install_dependencies
 setup_prom_monitoring
 setup_gpu_monitoring
 print_monitoring
+
+
+helm install prometheus-community/prometheus-adapter    --namespace monitoring    --generate-name    --values config/helm/prometheus-adapter.values
+cd submodules/tritoninferenceserver/ && helm install nvidia . --namespace deepops-triton

@@ -9,23 +9,27 @@ prometheus:
       kubernetes.io/ingress.class: "nginx"
       nginx.ingress.kubernetes.io/ssl-redirect: "false"
       nginx.ingress.kubernetes.io/rewrite-target: /
-  server:
-    persistentVolume:
-      enabled: true
   prometheusSpec:
-    storageSpec:
-      volumeClaimTemplate:
-        spec:
-          accessModes: ["ReadWriteOnce"]
-          resources:
-            requests:
-              storage: 10Gi
     nodeSelector:
       node-role.kubernetes.io/master: ""
   service:
     type: NodePort
     nodePort: 30500
   additionalServiceMonitors:
+  - name: triton-exporter
+    selector:
+      matchLabels:
+        app: tritoninferenceserver 
+    namespaceSelector:
+      matchNames:
+        - deepops-triton
+    
+    endpoints:
+    - port: metrics-inference-server 
+      #Check port by describe the deployment
+      interval: 1s
+      honorLabels: true
+
   - name: dcgm-exporter
     selector:
       matchLabels:
