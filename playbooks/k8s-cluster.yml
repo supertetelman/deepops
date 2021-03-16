@@ -5,6 +5,7 @@
 - include: bootstrap/bootstrap-python.yml
   tags:
     - bootstrap
+    - node-setup
 
 # Make sure Kubespray submodule is correct
 - hosts: all
@@ -25,25 +26,35 @@
 - include: bootstrap/bootstrap-ssh.yml
   tags:
     - bootstrap
+    - node-setup
 - include: bootstrap/bootstrap-sudo.yml
   tags:
     - bootstrap
+    - node-setup
 
 # Disable cloud-init
 - include: generic/disable-cloud-init.yml
   when: deepops_disable_cloud_init
+  tags:
+    - node-setup
 
 # Configure Chrony (NTP) sync
 - include: generic/chrony-client.yml
   when: chrony_install
+  tags:
+    - node-setup
+
 
 # Install the OpenShift API libraries required by the GPU plugin
 - include: bootstrap/bootstrap-openshift.yml
   tags:
     - bootstrap
+    - node-setup
 
 # Configure hostnames, /etc/hosts
 - include: generic/hosts.yml
+  tags:
+    - node-setup
 
 # Set up a local cluster container registry
 - include: container/standalone-container-registry.yml hostlist=kube-master
@@ -65,6 +76,7 @@
   environment: "{{proxy_env if proxy_env is defined else {}}}"
   tags:
     - bootstrap
+    - node-setup
 
 # Install Kubernetes
 # for configuration, see: config/group_vars/k8s-cluster.yml
@@ -86,6 +98,7 @@
       command: swapoff -a
   tags:
     - swap
+    - node-setup
  
 # Manage Kubernetes cluster access config file
 - hosts: k8s-cluster
@@ -126,12 +139,14 @@
 - include: nvidia-software/nvidia-driver.yml
   tags:
     - nvidia
+    - node-setup
   when: deepops_gpu_operator_enabled | default('false') | bool == false
 
 # Install NVIDIA container runtime on GPU servers
 - include: container/nvidia-docker.yml
   tags:
     - nvidia
+    - node-setup
   when: deepops_gpu_operator_enabled | default('false') | bool == false
 
 # Install k8s GPU feature discovery
@@ -248,3 +263,5 @@
   vars:
     hostlist: "{{ rsyslog_client_group | default('k8s-cluster') }}"
   when: kube_enable_rsyslog_client|default(true)
+  tags:
+    - node-setup

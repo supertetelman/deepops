@@ -228,12 +228,13 @@ DeepOps uses [Kubespray](https://github.com/kubernetes-sigs/kubespray) to deploy
 
 To add K8s nodes, modify the `config/inventory` file to include the new nodes under `[all]`. Then list the nodes as relevant under the `[kube-master]`, `[etcd]`, and `[kube-node]` sections. For example, if adding a new master node, list it under kube-master and etcd. A new worker node would go under kube-node.
 
-Then run the Kubespray `scale.yml` playbook...
+Run the bootstrapping commands on the new nodes by running the `k8s-cluster.yml` playbook with the `node-setup` tag and scale Kubernetes to the new node by running the `scale.yml` playbook...
 
 ```sh
 # NOTE: If SSH requires a password, add: `-k`
 # NOTE: If sudo on remote machine requires a password, add: `-K`
 # NOTE: If SSH user is different than current user, add: `-u ubuntu`
+ansible-playbook -l k8s-cluster --tags=node-setup playbooks/k8s-cluster.yml
 ansible-playbook -l k8s-cluster submodules/kubespray/scale.yml
 ```
 
