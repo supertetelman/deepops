@@ -80,7 +80,7 @@ for(int i = 0; i < axes.size(); i++) {
 
         lock(resource: null, label: 'gpu', quantity: "${GPUCOUNT}", variable: 'GPUDATA') {
 
-          stage("Setup-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}") {
+          stage("Setup-$DEEPOPS_DEPLOYMENT_PLATFORM-$DEEPOPS_VAGRANT_OS-$DEEPOPS_FULL_INSTALL") {
             checkout([$class: 'GitSCM', branches: [[name: "*/$DEEPOPS_BRANCH"]],
               userRemoteConfigs: [[url: "$DEEPOPS_REPO"]]]) // TODO: There is a timing bug here where this is pegged to a branch, not necessarily commit ID across tasks
 
@@ -108,7 +108,7 @@ for(int i = 0; i < axes.size(); i++) {
           }
 
           if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "slurm") {
-            stage("Deployment-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}") {
+            stage("Deployment-$DEEPOPS_DEPLOYMENT_PLATFORM-$DEEPOPS_VAGRANT_OS-$DEEPOPS_FULL_INSTALL") {
               echo "Set up Slurm"
               sh '''
                 bash -x ./workloads/jenkins/scripts/test-setup-slurm.sh
@@ -127,7 +127,7 @@ for(int i = 0; i < axes.size(); i++) {
           }
 
           if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "k8s") {
-            stage("Deployment-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}") {
+            stage("Deployment-$DEEPOPS_DEPLOYMENT_PLATFORM-$DEEPOPS_VAGRANT_OS-$DEEPOPS_FULL_INSTALL") {
               echo "Set up K8S"
               sh '''
                 bash -x ./workloads/jenkins/scripts/test-cluster-up.sh
@@ -146,7 +146,7 @@ for(int i = 0; i < axes.size(); i++) {
           }
 
           if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "slurm") {
-            stage("Services-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}") {
+            stage("Services-$DEEPOPS_DEPLOYMENT_PLATFORM-$DEEPOPS_VAGRANT_OS-$DEEPOPS_FULL_INSTALL") {
               echo "Test NFS"
               sh '''
                 timeout 60 bash -x ./workloads/jenkins/scripts/test-slurm-nfs-mount.sh
@@ -165,7 +165,7 @@ for(int i = 0; i < axes.size(); i++) {
           }
 
           if("$DEEPOPS_DEPLOYMENT_PLATFORM" == "k8s") {
-            stage("Services-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}") {
+            stage("Services-$DEEPOPS_DEPLOYMENT_PLATFORM-$DEEPOPS_VAGRANT_OS-$DEEPOPS_FULL_INSTALL") {
               echo "Verify local docker registry"
               sh '''
                  bash -x ./workloads/jenkins/scripts/test-local-registry.sh
@@ -197,7 +197,7 @@ for(int i = 0; i < axes.size(); i++) {
               '''
             }
           }
-          stage("cleanup-${DEEPOPS_DEPLOYMENT_PLATFORM}-${DEEPOPS_VAGRANT_OS}-${DEEPOPS_FULL_INSTALL}") {
+          stage("cleanup-$DEEPOPS_DEPLOYMENT_PLATFORM-$DEEPOPS_VAGRANT_OS-$DEEPOPS_FULL_INSTALL") {
               echo "Reset repo and unmunge files"
               sh '''
                 git reset --hard
@@ -233,7 +233,7 @@ for(int i = 0; i < axes.size(); i++) {
 }
 
 
-/*
+/* We do not do his for the Matrix Jenkinsfile because it makes sense to run multiple copies against different branches/configs
 stage('Stop Any Old Builds') {
   milestone label: '', ordinal:  Integer.parseInt(env.BUILD_ID) - 1
   milestone label: '', ordinal:  Integer.parseInt(env.BUILD_ID)
