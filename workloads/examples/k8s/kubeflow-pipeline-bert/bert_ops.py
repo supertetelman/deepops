@@ -336,7 +336,7 @@ class BertEvaluate(dsl.ContainerOp):
   '''Data is downloaded to /workspace/bert/data/<model>'''
   def __init__(self, name, model_type, task_type, checkpoint_final, bert_model, cased,
                precision, use_xla, batch_size, doc_stride, seq_length):
-    cmd = ["/bin/bash", "-x"]
+    cmd = ["/bin/bash", "-cx"]
     args = ["scripts/run_squad_inference.sh", checkpoint_final, batch_size, precision, use_xla, seq_length,
                  doc_stride, bert_model, batch_size]
     arguments = [" ".join([str(arg) for arg in args])]
