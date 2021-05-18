@@ -26,21 +26,24 @@
     gpu_operator_registry_secret: --set driver.imagePullSecrets[0]="{{ gpu_operator_registry_secret }}"
   when: gpu_operator_registry_secret != ""
 
+- name: Ensure config dir exists
+  file:
+    path: "{{ gpu_operator_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+
 - name: Copy DCGM CSV config file to host
   copy:
     src: "{{ gpu_operator_dcgm_config_csv }}"
-    dest: "/tmp/{{ gpu_operator_dcgm_config_csv }}"
-
-# TODO: If this already exists we fail, so skip that for now with failed_when: false
-- name: Create a configmap for DCGM CSV config file
-  command: kubectl create configmap dcgm-custom-metrics --from-file="/tmp/{{ gpu_operator_dcgm_config_csv }}" -n {{ gpu_operator_namespace }}
+    dest: "{{ gpu_operator_config_dir }}/{{ gpu_operator_dcgm_config_csv }}"
 
 - name: Copy values.yml to host
   template:
     src: "{{ gpu_operator_values_file }}"
-    dest: "/tmp/{{ gpu_operator_values_file }}"
+    dest: "{{ gpu_operator_config_dir }}/{{ gpu_operator_values_file }}"
 
 # XXX: This currently installs into the default namespace, as per the GPU Operator docs
 # https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/getting-started.html
 - name: install nvidia gpu operator
-  command: /usr/local/bin/helm upgrade --install "{{ gpu_operator_release_name }}" "{{ gpu_operator_chart_name }}" --version "{{ gpu_operator_chart_version }}" -f "/tmp/{{ gpu_operator_values_file }}"
+  command: /usr/local/bin/helm upgrade --install "{{ gpu_operator_release_name }}" "{{ gpu_operator_chart_name }}" --version "{{ gpu_operator_chart_version }}" -f "{{ gpu_operator_config_dir }}/{{ gpu_operator_values_file }}"

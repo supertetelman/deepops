@@ -19,6 +19,8 @@ gpu_operator_namespace: "gpu-operator-resources"
 gpu_operator_default_runtime: "docker"
 gpu_operator_driver_registry: "nvcr.io/nvidia"
 gpu_operator_driver_version: "460.32.03"
+deepops_dir: "/opt/deepops"
+gpu_operator_config_dir: "{{ deepops_dir }}/gpu-operator"
 gpu_operator_plugin_args:
 - "--mig-strategy={{ k8s_gpu_mig_strategy }}"
 - "--pass-device-specs=true"

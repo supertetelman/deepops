@@ -10,11 +10,11 @@ devicePlugin:
   args: {{ gpu_operator_plugin_args }}
 dcgmExporter:
   version: "{{ gpu_operator_dcgm_version }}"
-  extraVolumes:
+  extraHostVolumes:
     - name: dcgm-config
-      configMap:
-        name: dcgm-custom-metrics
+      hostPath: "{{ gpu_operator_config_dir }}"
   extraVolumeMounts:
     - name: dcgm-config
       mountPath: "/etc/dcgm-config"
+      readOnly: true
   args: ["-f", "/etc/dcgm-config/dcgm-custom-metrics.csv"]
