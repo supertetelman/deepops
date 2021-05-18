@@ -1,0 +1,20 @@
+migStrategy: "{{ k8s_gpu_mig_strategy }}"
+operator:
+  defaultRuntime: "{{ gpu_operator_default_runtime }}"
+driver:
+  repository: "{{ gpu_operator_driver_registry }}"
+  version: "{{ gpu_operator_driver_version }}"
+gfd:
+  migStrategy: "{{ k8s_gpu_mig_strategy }}"
+devicePlugin:
+  args: {{ gpu_operator_plugin_args }}
+dcgmExporter:
+  version: "{{ gpu_operator_dcgm_version }}"
+  extraVolumes:
+    - name: dcgm-config
+      configMap:
+        name: dcgm-custom-metrics
+  extraVolumeMounts:
+    - name: dcgm-config
+      mountPath: "/etc/dcgm-config"
+  args: ["-f", "/etc/dcgm-config/dcgm-custom-metrics.csv"]

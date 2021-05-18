@@ -19,7 +19,15 @@ gpu_operator_namespace: "gpu-operator-resources"
 gpu_operator_default_runtime: "docker"
 gpu_operator_driver_registry: "nvcr.io/nvidia"
 gpu_operator_driver_version: "460.32.03"
-gpu_operator_plugin_args: "--mig-strategy={{ k8s_gpu_mig_strategy }},--pass-device-specs=true,--fail-on-init-error=true,--device-list-strategy=envvar,--nvidia-driver-root=/run/nvidia/driver"
+gpu_operator_plugin_args:
+- "--mig-strategy={{ k8s_gpu_mig_strategy }}"
+- "--pass-device-specs=true"
+- "--fail-on-init-error=true"
+- "--device-list-strategy=envvar"
+- "--nvidia-driver-root=/run/nvidia/driver"
+gpu_operator_dcgm_version: "2.1.8-2.4.0-rc.2-ubuntu20.04"
+gpu_operator_dcgm_config_csv: "dcgm-custom-metrics.csv"
+gpu_operator_values_file: "gpu-operator-values.yml"
 
 # Variables used if driver containers are in a private registry (i.e. beta drivers & vGPU)
 ## Flag that determines whether to add a k8s secret for private containers
