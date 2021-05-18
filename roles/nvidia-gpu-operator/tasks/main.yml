@@ -13,7 +13,6 @@
 # TODO: If this already exists we fail, so skip that for now with failed_when: false
 - name: Create namespace for GPU Operator resources
   command: kubectl create namespace {{ gpu_operator_namespace }}
-  when: gpu_operator_create_secret
   failed_when: false
 
 # TODO: If this already exists we fail, so skip that for now with failed_when: false
