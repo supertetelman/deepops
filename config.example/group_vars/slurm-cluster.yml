@@ -3,7 +3,7 @@
 ################################################################################
 # Slurm job scheduler configuration
 # Playbook: slurm, slurm-cluster, slurm-perf, slurm-perf-cluster, slurm-validation
-slurm_version: 20.11.3
+slurm_version: 20.11.7
 slurm_install_prefix: /usr/local
 pmix_install_prefix: /opt/deepops/pmix
 hwloc_install_prefix: /opt/deepops/hwloc
@@ -144,7 +144,8 @@ openmpi_configure: "./configure --prefix={{ openmpi_install_prefix }} --disable-
 # Open OnDemand                                                                #
 ################################################################################
 install_open_ondemand: no
-ood_install_linuxhost_adapter: yes
+# OOD Linux-host adapter requires `slurm_cluster_install_singularity` to be true
+ood_install_linuxhost_adapter: no
 
 servername: '{{ ansible_fqdn }}'
 httpd_port: 9050
