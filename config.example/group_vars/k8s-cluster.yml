@@ -20,6 +20,14 @@ kubelet_flexvolumes_plugins_dir: /usr/libexec/kubernetes/kubelet-plugins/volume/
 # Docker configuration.
 deepops_gpu_operator_enabled: false
 
+# Enable / disable specific components of the GPU Operator
+# Setting driver and toolkit to false will allow the Operator to run with pre-existing drivers
+k8s_driver_enabled: "true"
+k8s_toolkit_enabled: "true"
+
+# Deploy the MIG manager with the GPU Operator
+k8s_mig_manager_enabled: "true"
+
 # Set the MIG labeling and use strategy to none, single, or mixed. See https://github.com/NVIDIA/k8s-device-plugin
 k8s_gpu_mig_strategy: "mixed"
 

@@ -1,13 +1,16 @@
-migStrategy: "{{ k8s_gpu_mig_strategy }}"
+# For full options & documentation see: https://github.com/NVIDIA/gpu-operator/blob/master/deployments/gpu-operator/values.yaml
+validator:
 operator:
   defaultRuntime: "{{ gpu_operator_default_runtime }}"
+mig:
+  strategy: "{{ k8s_gpu_mig_strategy }}"
 driver:
+  enabled: "{{ k8s_driver_enabled }}"
   repository: "{{ gpu_operator_driver_registry }}"
   version: "{{ gpu_operator_driver_version }}"
-gfd:
-  migStrategy: "{{ k8s_gpu_mig_strategy }}"
+toolkit:
+  enabled: "{{ k8s_toolkit_enabled }}"
 devicePlugin:
-  args: {{ gpu_operator_plugin_args }}
 dcgmExporter:
   version: "{{ gpu_operator_dcgm_version }}"
   extraHostVolumes:
@@ -18,3 +21,6 @@ dcgmExporter:
       mountPath: "/etc/dcgm-config"
       readOnly: true
   args: ["-f", "/etc/dcgm-config/dcgm-custom-metrics.csv"]
+gfd:
+migManager:
+  enabled: "{{ k8s_mig_manager_enabled }}"
