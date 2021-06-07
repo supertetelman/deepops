@@ -22,7 +22,7 @@ ansible ${group} -vv -m raw \
     -u vagrant \
     ${ansible_extra_args} \
     -b -i "virtual/config/inventory" \
-    -a "nvidia smi"
+    -a "nvidia-smi"
 
 ansible ${group} -vv -m raw \
     -u vagrant \
