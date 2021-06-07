@@ -11,6 +11,32 @@ DCGM_EXPORTER_PORT=9400
 # Run DCGM metric checks against all nodes in the group passed in (kube-node or slurm-node)
 group="${1}"
 
+ansible ${group} -vv -m raw \
+    -u vagrant \
+    ${ansible_extra_args} \
+    -b -i "virtual/config/inventory" \
+    -a "docker ps"
+
+
+ansible ${group} -vv -m raw \
+    -u vagrant \
+    ${ansible_extra_args} \
+    -b -i "virtual/config/inventory" \
+    -a "nvidia smi"
+
+ansible ${group} -vv -m raw \
+    -u vagrant \
+    ${ansible_extra_args} \
+    -b -i "virtual/config/inventory" \
+    -a "nvidia-smi -L"
+
+
+ansible ${group} -vv -m raw \
+    -u vagrant \
+    ${ansible_extra_args} \
+    -b -i "virtual/config/inventory" \
+    -a "netstat -anp"
+
 # DCGM-exporter takes some time to initialize after it has started up
 # Before checking specific metrics we poll for any DCGM metrics to return
 set +e
