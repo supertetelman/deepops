@@ -50,6 +50,8 @@ while [ ${time} -lt ${timeout} ]; do
         curl http://10.0.0.7${GPU01}:${DCGM_EXPORTER_PORT}/metrics | grep DCGM && break
     else
         curl http://10.0.0.6${GPU01}:${DCGM_EXPORTER_PORT}/metrics | grep DCGM && break
+        curl http://10.0.0.6${GPU01}:${DCGM_EXPORTER_PORT}/metrics
+        curl http://10.0.0.6${GPU01}:9100/metrics
     fi
     let time=$time+5
     sleep 5
