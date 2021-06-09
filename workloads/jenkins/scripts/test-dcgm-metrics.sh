@@ -15,7 +15,14 @@ ansible ${group} -vv -m raw \
     -u vagrant \
     ${ansible_extra_args} \
     -b -i "virtual/config/inventory" \
-    -a "docker ps"
+    -a "docker ps -a"
+
+
+ansible ${group} -vv -m raw \
+    -u vagrant \
+    ${ansible_extra_args} \
+    -b -i "virtual/config/inventory" \
+    -a 'for d in `docker ps -aq`; do docker logs $d; done'
 
 
 ansible ${group} -vv -m raw \
@@ -37,6 +44,7 @@ ansible ${group} -vv -m raw \
     -b -i "virtual/config/inventory" \
     -a "netstat -anp"
 
+        curl http://10.0.0.6${GPU01}:9100/metrics
 # DCGM-exporter takes some time to initialize after it has started up
 # Before checking specific metrics we poll for any DCGM metrics to return
 set +e
@@ -50,8 +58,6 @@ while [ ${time} -lt ${timeout} ]; do
         curl http://10.0.0.7${GPU01}:${DCGM_EXPORTER_PORT}/metrics | grep DCGM && break
     else
         curl http://10.0.0.6${GPU01}:${DCGM_EXPORTER_PORT}/metrics | grep DCGM && break
-        curl http://10.0.0.6${GPU01}:${DCGM_EXPORTER_PORT}/metrics
-        curl http://10.0.0.6${GPU01}:9100/metrics
     fi
     let time=$time+5
     sleep 5
