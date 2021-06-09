@@ -28,7 +28,7 @@ ansible ${group} -vv -m raw \
     -u vagrant \
     ${ansible_extra_args} \
     -b -i "virtual/config/inventory" \
-    -a "nvidia-smi -L"
+    -a "docker logs adam-debug"
 
 
 ansible ${group} -vv -m raw \
