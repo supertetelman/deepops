@@ -54,9 +54,9 @@ roles:
   name: ansible-maas
   version: '632fe9bd1e048b9abb717621dc2d76b19614327b'
 
-- src: https://github.com/DeepOps/ansible-role-chrony
+- src: https://github.com/supertetelman/ansible-role-chrony
   name: DeepOps.chrony
-  version: 'c9022153036dfdde4e2b313aecde4a46cd6f6687'
+  version: 'master'
 
 - src: https://github.com/OSC/ood-ansible.git
   version: 'v1.8.1'
