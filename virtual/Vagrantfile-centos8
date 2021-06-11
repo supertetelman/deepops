@@ -1,5 +1,6 @@
 VAGRANTFILE_API_VERSION = "2"
-BOX_IMAGE = "centos/8"
+
+BOX_IMAGE = "generic/centos8"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.insert_key = false
