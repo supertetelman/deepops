@@ -26,9 +26,9 @@ A short description of the nightly testing is outlined below. The full suit of t
 | Test | [PR](../../workloads/jenkins/Jenkinsfile) | [Nightly](../../workloads/jenkins/Jenkinsfile-nightly) | [Nightly Multi-node](../../workloads/jenkins/Jenkinsfile-multi-nightly) | Comments |
 | --- | --- | --- | --- | --- |
 | Ubuntu 18.04 | x | x | x | |
-| Ubuntu 20.04 | | | | x |
+| Ubuntu 20.04 | | x | x | |
 | CentOS 7 | | x | x | |
-| CentOS | | | x | |
+| CentOS | | x | x | |
 | DGX OS | | | | No automated testing support |
 | RHEL | | | | No testing support |
 | 1 mgmt node | x | x | | |
@@ -61,6 +61,7 @@ A short description of the nightly testing is outlined below. The full suit of t
 | MAAS Deployment | | | | Used regularly, no automated testing
 | MIG configuration | | | | No testing support
 
+> Note: There are currently some issues with the CentOS 8 tests running out of disk space and failing.
 
 ## DeepOps Deployment Validation
 
